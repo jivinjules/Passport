@@ -10,10 +10,6 @@ const PORT = process.env.PORT || 3001;
 // Route requires
 const user = require('./routes/routes/user')
 
-// Define middleware here
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
 // MIDDLEWARE
 app.use(morgan('dev'))
 app.use(
