@@ -1,35 +1,12 @@
 const express = require('express')
-const path = require("path");
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const session = require('express-session')
-const dbConnection = require('./models') 
+const dbConnection = require('./routes/database') 
 const MongoStore = require('connect-mongo')(session)
 const passport = require('./routes/passport');
 const app = express()
 const PORT = process.env.PORT || 3001;
-
-
-// Define middleware here
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-// Serve up static assets (usually on heroku)
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("client/build"));
-  app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "client/build", "index.html"));
-  });
-}
-
-// Define API routes here
-
-// Send every other request to the React app
-// Define any API routes before this runs
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "./client/build/index.html"));
-// });
-
 // Route requires
 const user = require('./routes/routes/user')
 
@@ -41,6 +18,14 @@ app.use(
 	})
 )
 app.use(bodyParser.json())
+
+if (process.env.NODE_ENV === "production") {
+	app.use(express.static("client/build"));
+   
+	app.get('*', (request, response) => {
+	  response.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+	})
+}
 
 // Sessions
 app.use(
@@ -58,7 +43,7 @@ app.use(passport.session()) // calls the deserializeUser
 
 
 // Routes
-app.use('/user', user)
+app.use('/user/', user)
 
 // Starting Server 
 app.listen(PORT, () => {
